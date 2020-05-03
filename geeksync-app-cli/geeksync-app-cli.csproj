@@ -6,4 +6,8 @@
     <RootNamespace>geeksync_app_cli</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="GeeksyncClient" Version="0.2.2" />
+  </ItemGroup>
+
 </Project>
