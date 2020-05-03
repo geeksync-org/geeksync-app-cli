@@ -2,6 +2,7 @@
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using GeekSyncClient.Client;
 
 namespace geeksync_app_cli
 {
@@ -80,6 +81,18 @@ namespace geeksync_app_cli
         {
             CLIConfig cfg = LoadConfig(config);
             Console.WriteLine("Receiver Channel: " + cfg.ChannelID.ToString());
+            ReceiverClient client=new ReceiverClient(cfg.ChannelID,cfg.ServerURL);
+            client.MessageReceived=HandleReceivedMessage;
+            client.Connect();
+            Console.WriteLine("Press enter to close");
+            Console.ReadLine();
+            client.Disconnect();
+        }
+
+        static void HandleReceivedMessage(string msg)
+        {
+            Console.WriteLine("Received: "+msg);
+
         }
     }
 }
