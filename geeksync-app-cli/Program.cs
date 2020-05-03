@@ -86,6 +86,7 @@ namespace geeksync_app_cli
             client.Connect();
             Console.WriteLine("Press enter to close");
             Console.ReadLine();
+            client.Disconnect();
         }
 
         static void HandleReceivedMessage(string msg)
