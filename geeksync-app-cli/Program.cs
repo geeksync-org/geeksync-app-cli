@@ -79,7 +79,8 @@ namespace geeksync_app_cli
             SenderClient client=new SenderClient(cfg.ChannelID,cfg.ServerURL);
             client.CheckIfAvailable();
             Console.WriteLine("Available: "+client.IsAvailable.ToString());
-            client.SendMessage("TEST");
+            string msg=Console.ReadLine();
+            client.SendMessage(msg);
             
         }
         static void Receiver(FileInfo config)
