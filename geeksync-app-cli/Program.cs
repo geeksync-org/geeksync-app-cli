@@ -76,6 +76,12 @@ namespace geeksync_app_cli
         {
             CLIConfig cfg = LoadConfig(config);
             Console.WriteLine("Sender channel: " + cfg.ChannelID.ToString());
+            SenderClient client=new SenderClient(cfg.ChannelID,cfg.ServerURL);
+            client.CheckIfAvailable();
+            Console.WriteLine("Available: "+client.IsAvailable.ToString());
+            string msg=Console.ReadLine();
+            client.SendMessage(msg);
+            
         }
         static void Receiver(FileInfo config)
         {
