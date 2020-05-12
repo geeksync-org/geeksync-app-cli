@@ -60,6 +60,13 @@ stages:
         displayName: 'Build and publish'
       - script: dotnet pack -p:PackageVersion=$(Build.BuildNumber) --output $(Build.ArtifactStagingDirectory)/nupkgs geeksync-app-cli/geeksync-app-cli.csproj
         displayName: Create NuGet package
+      - task: ArchiveFiles@2
+        inputs:
+          rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/geeksync-app-cli'
+          includeRootFolder: true
+          archiveType: 'zip'
+          archiveFile: '$(Build.ArtifactStagingDirectory)/github/geeksync-app-cli$(Build.BuildNumber).zip'
+          replaceExistingArchive: true
       - task: DotNetCoreCLI@2
         displayName: Unit test
         continueOnError: false
