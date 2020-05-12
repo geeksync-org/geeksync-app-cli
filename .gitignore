@@ -348,3 +348,8 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+
+.vscode
+geeksync-app-cli/receiver-config.json
+geeksync-app-cli/sender-config.json
+geeksync-app-cli/local-config.json
