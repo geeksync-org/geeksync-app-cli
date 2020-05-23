@@ -6,6 +6,7 @@ using GeekSyncClient.Client;
 using GeekSyncClient;
 using GeekSyncClient.Config;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace geeksync_app_cli
 {
@@ -29,7 +30,7 @@ namespace geeksync_app_cli
                 return;
             }
             string mode = "";
-            string config="";
+            string config = "";
             try
             {
                 mode = args[0];
@@ -43,7 +44,7 @@ namespace geeksync_app_cli
             switch (mode.ToLower())
             {
                 case "sender": Sender(config); break;
-                case "receiver": Receiver(config); break;
+                case "receiver": ReceiverInitWorkaround(config); Receiver(config); break;
                 default: ShowHelp("Wrong mode, use sender or receiver."); break;
             }
 
@@ -104,18 +105,62 @@ namespace geeksync_app_cli
             CLIConfig cfg = LoadConfig(config + ".local");
 
             ConfigManager cm = new ConfigManager(config);
-            List<ReceiverClient> list=new List<ReceiverClient>();
+            List<ReceiverClient> list = new List<ReceiverClient>();
 
             foreach (Peer p in cm.Config.Peers)
             {
-            Console.WriteLine("Receiver Channel: " + p.ChannelID.ToString());
-            ReceiverClient client = new ReceiverClient(cm,p.ChannelID, cfg.ServerURL);
-            client.MessageReceived = HandleReceivedMessage;
-            client.Connect();
+                Console.WriteLine("Receiver Channel: " + p.ChannelID.ToString());
+                ReceiverClient client = new ReceiverClient(cm, p.ChannelID, cfg.ServerURL);
+                client.MessageReceived = HandleReceivedMessage;
+                client.Connect();
             }
             Console.WriteLine("Press enter to close");
             Console.ReadLine();
             //client.Disconnect();
+            foreach (ReceiverClient r in list)
+            {
+                r.Disconnect();
+            }
+        }
+
+        static string initReply = "";
+
+        static void HandleReceivedInit(string msg)
+        {
+            initReply = msg;
+
+        }
+
+        static void ReceiverInitWorkaround(string config)
+        {
+            string msg = Guid.NewGuid().ToString();
+
+            Console.WriteLine("Bug workaround - waiting for own answer.");
+            CLIConfig cfg = LoadConfig(config + ".local");
+
+            ConfigManager cm = new ConfigManager(config);
+            List<ReceiverClient> list = new List<ReceiverClient>();
+
+            foreach (Peer p in cm.Config.Peers)
+            {
+                Console.WriteLine("Init receiver channel: " + p.ChannelID.ToString());
+                ReceiverClient client = new ReceiverClient(cm, p.ChannelID, cfg.ServerURL);
+                client.MessageReceived = HandleReceivedInit;
+                client.Connect();
+            }
+
+            while (initReply.ToLower().Trim() != msg.ToLower().Trim())
+            {
+                foreach (Peer p in cm.Config.Peers)
+                {
+                    SenderClient client = new SenderClient(cm, p.ChannelID, cfg.ServerURL);
+                    client.SendMessage(msg);
+                }
+                Thread.Sleep(100);
+            }
+
+
+            Console.WriteLine("Got it... Good.");
             foreach (ReceiverClient r in list)
             {
                 r.Disconnect();
