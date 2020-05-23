@@ -353,3 +353,5 @@ MigrationBackup/
 geeksync-app-cli/receiver-config.json
 geeksync-app-cli/sender-config.json
 geeksync-app-cli/local-config.json
+geeksync-app-cli/local-self.config
+geeksync-app-cli/local-self.config.local
