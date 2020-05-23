@@ -355,3 +355,7 @@ geeksync-app-cli/sender-config.json
 geeksync-app-cli/local-config.json
 geeksync-app-cli/local-self.config
 geeksync-app-cli/local-self.config.local
+geeksync-app-cli/local-receiver.conf
+geeksync-app-cli/local-receiver.conf.local
+geeksync-app-cli/local-sender.conf
+geeksync-app-cli/local-sender.conf.local

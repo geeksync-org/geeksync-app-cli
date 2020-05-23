@@ -7,6 +7,7 @@ using GeekSyncClient;
 using GeekSyncClient.Config;
 using System.Collections.Generic;
 using System.Threading;
+using System.Linq;
 
 namespace geeksync_app_cli
 {
@@ -45,6 +46,7 @@ namespace geeksync_app_cli
             {
                 case "sender": Sender(config); break;
                 case "receiver": ReceiverInitWorkaround(config); Receiver(config); break;
+                case "pair": Pair(config, args[2]); break;
                 default: ShowHelp("Wrong mode, use sender or receiver."); break;
             }
 
@@ -141,21 +143,19 @@ namespace geeksync_app_cli
             ConfigManager cm = new ConfigManager(config);
             List<ReceiverClient> list = new List<ReceiverClient>();
 
-            foreach (Peer p in cm.Config.Peers)
-            {
-                Console.WriteLine("Init receiver channel: " + p.ChannelID.ToString());
-                ReceiverClient client = new ReceiverClient(cm, p.ChannelID, cfg.ServerURL);
-                client.MessageReceived = HandleReceivedInit;
-                client.Connect();
-            }
+            Peer p = cm.Config.Peers.Single(x => x.PeerID == cm.Config.MyID);
+            Console.WriteLine("Init receiver channel: " + p.ChannelID.ToString());
+            ReceiverClient client = new ReceiverClient(cm, p.ChannelID, cfg.ServerURL);
+            client.MessageReceived = HandleReceivedInit;
+            client.Connect();
+
+            SenderClient sclient = new SenderClient(cm, p.ChannelID, cfg.ServerURL);
 
             while (initReply.ToLower().Trim() != msg.ToLower().Trim())
             {
-                foreach (Peer p in cm.Config.Peers)
-                {
-                    SenderClient client = new SenderClient(cm, p.ChannelID, cfg.ServerURL);
-                    client.SendMessage(msg);
-                }
+                
+                sclient.SendMessage(msg);
+              
                 Thread.Sleep(100);
             }
 
@@ -171,6 +171,17 @@ namespace geeksync_app_cli
         {
             Console.WriteLine("Received: " + msg);
 
+        }
+
+
+        static void Pair(string config1, string config2)
+        {
+            ConfigManager cm1 = new ConfigManager(config1);
+            ConfigManager cm2 = new ConfigManager(config2);
+            Console.WriteLine("Client 1: " + cm1.Config.MyID.ToString());
+            Console.WriteLine("Client 2: " + cm2.Config.MyID.ToString());
+            Guid ch = cm1.PeerWith(cm2);
+            Console.WriteLine("Cchannel: " + ch.ToString());
         }
     }
 }
