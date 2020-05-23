@@ -15,7 +15,7 @@ pool:
 variables:
   buildConfiguration: 'Release'
   major: 0
-  minor: 2
+  minor: 3
 
 stages:
 - stage: VersionNonMaster
