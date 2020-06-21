@@ -350,12 +350,9 @@ MigrationBackup/
 .ionide/
 
 .vscode
-geeksync-app-cli/receiver-config.json
-geeksync-app-cli/sender-config.json
-geeksync-app-cli/local-config.json
-geeksync-app-cli/local-self.config
-geeksync-app-cli/local-self.config.local
-geeksync-app-cli/local-receiver.conf
-geeksync-app-cli/local-receiver.conf.local
-geeksync-app-cli/local-sender.conf
-geeksync-app-cli/local-sender.conf.local
+
+geeksync-app-cli/local*
+geeksync-app-cli/*.conf
+geeksync-app-cli/*.config
+geeksync-app-cli/*.config.local
+
